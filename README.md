@@ -5,7 +5,9 @@ This project is intended to bring auto service staling to Docker Swarm. This scr
 1. You can deploy prometheus, cadvisor, and docker-swarm-autoscale by running `docker stack deploy -c swarm-autoscale-stack.yml`.
 ..* You can also utilize an already deploy prometheus and cadvisor by specifying the PROMETHEUS_URL in docker-swarm-autoscale environment. `swarm-autoscale-stack.yml` shows an example of this.
 ..* docker-swarm-autoscale needs a placement contstraint to deploy to a manager. swarm-autoscale-stack.yml` shows an example of this.
-2. For services you want to autoscale you will need a deploy label ```
+2. For services you want to autoscale you will need a deploy label `cpu.autoscale=true`. 
+
+```
 deploy:
   labels:
     - "cpu.autoscale=true"
