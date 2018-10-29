@@ -1,0 +1,65 @@
+version: "3"
+
+networks:
+  autoscale:
+
+services:
+  docker-swarm-autoscale:
+    image: jcwimer/docker-swarm-autoscale
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+    networks:
+      - autoscale
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: 128M
+        reservations:
+          cpus: '0.10'
+          memory: 64M
+  cadvisor:
+    image: google/cadvisor:${CADVISOR_VERSION:-v0.25.0}
+    networks:
+      - autoscale
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/rootfs
+      - /var/run:/var/run
+      - /sys:/sys
+      - /var/lib/docker/:/var/lib/docker
+    deploy:
+      mode: global
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: 128M
+        reservations:
+          cpus: '0.10'
+          memory: 64M
+
+  prometheus:
+    image: jcwimer/prometheus-swarm-autoscale
+    networks:
+      - autoscale
+    command: --storage.tsdb.retention 1d --config.file=/etc/prometheus/prometheus.yml
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
+        reservations:
+          cpus: '0.50'
+          memory: 128M
