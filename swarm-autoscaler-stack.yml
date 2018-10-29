@@ -4,8 +4,8 @@ networks:
   autoscale:
 
 services:
-  docker-swarm-autoscale:
-    image: jcwimer/docker-swarm-autoscale
+  docker-swarm-autoscaler:
+    image: jcwimer/docker-swarm-autoscaler
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
@@ -46,7 +46,7 @@ services:
           memory: 64M
 
   prometheus:
-    image: jcwimer/prometheus-swarm-autoscale
+    image: jcwimer/prometheus-swarm-autoscaler
     networks:
       - autoscale
     command: --storage.tsdb.retention 1d --config.file=/etc/prometheus/prometheus.yml
