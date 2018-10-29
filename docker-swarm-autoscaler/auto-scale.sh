@@ -20,7 +20,7 @@ while ls > /dev/null; do
   done
 
   #scale down
-  for service in $(curl --silent "${PROMETHEUS_URL}${PROMETHEUS_API}${PROMETHEUS_QUERY}<${CPU_PERCENTAGE_LOWER_LIMIT}" | jq ".data.result[].metric | .container_label_com_docker_swarm_service_name" | sort | uniq); do
+  for service in $(curl --silent "${PROMETHEUS_URL}/${PROMETHEUS_API}${PROMETHEUS_QUERY}<${CPU_PERCENTAGE_LOWER_LIMIT}" | jq ".data.result[].metric | .container_label_com_docker_swarm_service_name" | sort | uniq); do
     service_name=$(echo $service | sed 's/\"//g')
     auto_scale_label=$(docker service inspect $service_name | jq '.[].Spec.Labels["swarm.autoscaler"]')
     replica_minimum=$(docker service inspect $service_name | jq '.[].Spec.Labels["swarm.autoscaler.minimum"]' | sed 's/\"//g')
