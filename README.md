@@ -1,6 +1,8 @@
 # autoscale-docker-swarm
 This project is intended to bring auto service staling to Docker Swarm. This script uses prometheus paired with cadvisor metrics to determine cpu usage. It then uses a manager node to determine if a service wants to be autoscaled and uses a manager node to scale the service.
 
+Currently the project only uses cpu to autoscale. If cpu usage reaches 85% the service will scale up, if it reaches 25% it will scale down.
+
 ## Usage
 1. You can deploy prometheus, cadvisor, and docker-swarm-autoscale by running `docker stack deploy -c swarm-autoscale-stack.yml`.
 ..* You can also utilize an already deploy prometheus and cadvisor by specifying the PROMETHEUS_URL in docker-swarm-autoscale environment. `swarm-autoscale-stack.yml` shows an example of this.
@@ -11,6 +13,19 @@ This project is intended to bring auto service staling to Docker Swarm. This scr
 deploy:
   labels:
     - "cpu.autoscale=true"
+```
+
+This is best paired with resource constraints limits. This is also under the deploy key.
+
+```
+deploy:
+  resources:
+    reservations:
+      cpus: '0.25'
+      memory: 512M
+    limits:
+      cpus: '0.50'
+
 ```
 
 ## Configuration
