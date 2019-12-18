@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  helloworld:
+    image: tutum/hello-world
+    ports:
+     - 8080:80
+    logging:
+      driver: json-file
+    deploy:
+      labels:
+        swarm.autoscaler: 'true'
+        swarm.autoscaler.maximum: '4'
+        swarm.autoscaler.minimum: '3'

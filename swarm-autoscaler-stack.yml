@@ -1,11 +1,15 @@
-version: "3"
+version: "3.7"
 
 networks:
   autoscale:
 
+configs:
+  prometheus_config:
+    file: ./prometheus.yml
+
 services:
   docker-swarm-autoscaler:
-    image: jcwimer/docker-swarm-autoscaler
+    image: jcwimer/docker-swarm-autoscaler:0.2.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
@@ -31,10 +35,11 @@ services:
       - autoscale
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /:/rootfs
-      - /var/run:/var/run
-      - /sys:/sys
-      - /var/lib/docker/:/var/lib/docker
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
     deploy:
       mode: global
       resources:
@@ -46,16 +51,19 @@ services:
           memory: 64M
 
   prometheus:
-    image: jcwimer/prometheus-swarm-autoscaler
+    image: prom/prometheus:v2.12.0
     networks:
       - autoscale
-    command: --storage.tsdb.retention 1d --config.file=/etc/prometheus/prometheus.yml
+    command: ["--storage.tsdb.retention.size=1GB", "--config.file=/etc/prometheus/prometheus.yml", "--web.console.libraries=/etc/prometheus/console_libraries", "--web.console.templates=/etc/prometheus/consoles", "--web.enable-lifecycle"]
+    configs:
+       - source: prometheus_config
+         target: /etc/prometheus/prometheus.yml
     deploy:
       mode: replicated
       replicas: 1
       placement:
         constraints:
-          - node.role == worker
+          - node.role == manager
       resources:
         limits:
           cpus: '0.50'
