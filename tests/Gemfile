@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+ruby '2.6.3'
+gem 'awesome_print', '~> 1.8'
+gem 'guard-rspec', require: false
+gem 'pry-byebug', '~> 3.7'
+gem 'rspec-shell-expectations'
+gem 'rake'
+gem 'rspec'
