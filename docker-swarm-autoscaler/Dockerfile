@@ -7,11 +7,12 @@ RUN apt-get update -qq \
     ca-certificates \
     curl \
     software-properties-common \
+    dnsutils \
   && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
   && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable" \
   && apt-get update -qq \
   && apt-get install -y -qq \
-    docker-ce=18.03.0~ce-0~ubuntu \
+    docker-ce=5:19.03.5* \
   && apt-get -qq clean \
   && apt-get autoremove -y \
   && rm -rf \
@@ -22,5 +23,4 @@ RUN apt-get update -qq \
 COPY auto-scale.sh /auto-scale.sh
 RUN chmod a+x /auto-scale.sh
 
-ENTRYPOINT ["/bin/bash"]
 CMD ["/auto-scale.sh"]
